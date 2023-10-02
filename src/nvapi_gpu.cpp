@@ -367,80 +367,10 @@ extern "C" {
 
     NvAPI_Status __cdecl NvAPI_GPU_GetArchInfo(NvPhysicalGpuHandle hPhysicalGpu, NV_GPU_ARCH_INFO* pGpuArchInfo) {
         constexpr auto n = __func__;
-        auto returnAddress = _ReturnAddress();
 
-        if (nvapiAdapterRegistry == nullptr)
-            return ApiNotInitialized(n);
-
-        if (pGpuArchInfo == nullptr)
-            return InvalidArgument(n);
-
-        auto adapter = reinterpret_cast<NvapiAdapter*>(hPhysicalGpu);
-        if (!nvapiAdapterRegistry->IsAdapter(adapter))
-            return ExpectedPhysicalGpuHandle(n);
-
-        if (pGpuArchInfo->version != NV_GPU_ARCH_INFO_VER_1 && pGpuArchInfo->version != NV_GPU_ARCH_INFO_VER_2)
-            return IncompatibleStructVersion(n);
-
-        if (!adapter->HasNvProprietaryDriver())
-            return NvidiaDeviceNotFound(n);
-
-        auto architectureId = adapter->GetArchitectureId();
-
-        if (env::needsAmpereSpoofing(architectureId, returnAddress))
-            architectureId = NV_GPU_ARCHITECTURE_GA100;
-
-        if (env::needsPascalSpoofing(architectureId))
-            architectureId = NV_GPU_ARCHITECTURE_GP100;
-
-        // Assume the implementation ID from the architecture ID. No simple way
-        // to do a more fine-grained query at this time. Would need wine-nvml
-        // usage.
-        NV_GPU_ARCH_IMPLEMENTATION_ID implementationId;
-        switch (architectureId) {
-            case NV_GPU_ARCHITECTURE_AD100:
-                implementationId = NV_GPU_ARCH_IMPLEMENTATION_AD102;
-                break;
-            case NV_GPU_ARCHITECTURE_GA100:
-                implementationId = NV_GPU_ARCH_IMPLEMENTATION_GA102;
-                break;
-            case NV_GPU_ARCHITECTURE_TU100:
-                implementationId = NV_GPU_ARCH_IMPLEMENTATION_TU102;
-                break;
-            case NV_GPU_ARCHITECTURE_GV100:
-                implementationId = NV_GPU_ARCH_IMPLEMENTATION_GV100;
-                break;
-            case NV_GPU_ARCHITECTURE_GP100:
-                implementationId = NV_GPU_ARCH_IMPLEMENTATION_GP102;
-                break;
-            case NV_GPU_ARCHITECTURE_GM200:
-                implementationId = NV_GPU_ARCH_IMPLEMENTATION_GM204;
-                break;
-            case NV_GPU_ARCHITECTURE_GK100:
-                implementationId = NV_GPU_ARCH_IMPLEMENTATION_GK104;
-                break;
-            default:
-                return Error(n);
-        }
-
-        auto revisionId = NV_GPU_CHIP_REV_UNKNOWN;
-
-        switch (pGpuArchInfo->version) {
-            case NV_GPU_ARCH_INFO_VER_1: {
-                auto pGpuArchInfoV1 = reinterpret_cast<NV_GPU_ARCH_INFO_V1*>(pGpuArchInfo);
-                pGpuArchInfoV1->architecture = architectureId;
-                pGpuArchInfoV1->implementation = implementationId;
-                pGpuArchInfoV1->revision = revisionId;
-                break;
-            }
-            case NV_GPU_ARCH_INFO_VER_2:
-                pGpuArchInfo->architecture_id = architectureId;
-                pGpuArchInfo->implementation_id = implementationId;
-                pGpuArchInfo->revision_id = revisionId;
-                break;
-            default:
-                return Error(n); // Unreachable, but just to be sure
-        }
+        pGpuArchInfo->architecture_id = NV_GPU_ARCHITECTURE_AD100;
+        pGpuArchInfo->implementation_id = NV_GPU_ARCH_IMPLEMENTATION_AD102;
+        pGpuArchInfo->revision_id = NV_GPU_CHIP_REV_UNKNOWN;
 
         return Ok(n);
     }

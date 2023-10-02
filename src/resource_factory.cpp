@@ -37,7 +37,7 @@ namespace dxvk {
         return std::make_unique<Nvml>();
     }
 
-    std::unique_ptr<Lfx> ResourceFactory::CreateLfx() {
-        return std::make_unique<Lfx>();
+    std::unique_ptr<Lfx2> ResourceFactory::CreateLfx() {
+        return std::make_unique<Lfx2>();
     }
 }

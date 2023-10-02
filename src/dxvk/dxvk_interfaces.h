@@ -17,6 +17,7 @@ enum D3D11_VK_EXTENSION : uint32_t {
     D3D11_VK_EXT_BARRIER_CONTROL = 3,
     D3D11_VK_NVX_BINARY_IMPORT = 4,
     D3D11_VK_NVX_IMAGE_VIEW_HANDLE = 5,
+    D3D11_VK_LATENCYFLEX2 = 6,
 };
 
 enum D3D11_VK_BARRIER_CONTROL : uint32_t {
@@ -117,6 +118,17 @@ ID3D11VkExtDevice1 : public ID3D11VkExtDevice {
         uint32_t * pCudaTextureHandle) = 0;
 };
 
+MIDL_INTERFACE("851a9f0f-5da0-4850-b563-a7bbc414f4e6")
+ID3DLfx2ExtDevice : public IUnknown {
+    static const GUID guid;
+
+    virtual void STDMETHODCALLTYPE MarkRenderStart(void* frame) = 0;
+
+    virtual void STDMETHODCALLTYPE MarkRenderEnd(void* frame) = 0;
+
+    virtual void STDMETHODCALLTYPE ImplicitBeginFrame(uint64_t * outTimestamp, void* outFrame) = 0;
+};
+
 MIDL_INTERFACE("fd0bca13-5cb6-4c3a-987e-4750de2ca791")
 ID3D11VkExtContext : public IUnknown {
     static const GUID guid;
@@ -193,5 +205,6 @@ DXVK_DEFINE_GUID(IDXGIVkInteropFactory1)
 DXVK_DEFINE_GUID(IDXGIVkInteropAdapter)
 DXVK_DEFINE_GUID(ID3D11VkExtDevice)
 DXVK_DEFINE_GUID(ID3D11VkExtDevice1)
+DXVK_DEFINE_GUID(ID3DLfx2ExtDevice)
 DXVK_DEFINE_GUID(ID3D11VkExtContext)
 DXVK_DEFINE_GUID(ID3D11VkExtContext1)
