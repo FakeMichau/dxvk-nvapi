@@ -30,10 +30,6 @@ class MockFactory : public dxvk::ResourceFactory {
         return std::move(m_nvmlMock);
     }
 
-    std::unique_ptr<dxvk::Lfx> CreateLfx() override {
-        return std::move(m_lfxMock);
-    }
-
     [[nodiscard]] std::array<std::unique_ptr<expectation>, 1> ConfigureAllowRelease() {
         return {
             NAMED_ALLOW_CALL(*m_dxgiFactoryMock, Release())
@@ -44,5 +40,4 @@ class MockFactory : public dxvk::ResourceFactory {
     std::unique_ptr<DXGIDxvkFactoryMock> m_dxgiFactoryMock;
     std::unique_ptr<VulkanMock> m_vulkanMock;
     std::unique_ptr<NvmlMock> m_nvmlMock;
-    std::unique_ptr<LfxMock> m_lfxMock;
 };
